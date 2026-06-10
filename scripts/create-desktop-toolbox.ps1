@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Stop"
 
 param(
   [string]$ToolboxName = "Codex登录刷新工具"
 )
 
+$ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $desktop = [Environment]::GetFolderPath("Desktop")
 $toolbox = Join-Path $desktop $ToolboxName
