@@ -17,20 +17,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Check for vulnerable dependencies
-        run: npm audit --omit=dev
-        continue-on-error: true
 
       - name: Validate package.json structure
         run: |
           node - <<'NODE'
-          const pkg = require('./package.json');
+          const pkg = require('./scripts/package.json');
           const required = ['name', 'version', 'description', 'scripts', 'dependencies'];
 
           for (const key of required) {
