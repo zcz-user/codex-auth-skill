@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>🧩 ClawHub Skill for Codex CLI</b><br>
-  <sub>Refresh Codex CLI auth.json from your ChatGPT browser session</sub>
+  <sub>Refresh Codex CLI auth.json from your ChatGPT browser session<br>📱 跳过手机验证码 · 不需要外区手机号</sub>
 </p>
 
 <p align="center">

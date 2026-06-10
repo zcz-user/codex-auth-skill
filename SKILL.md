@@ -1,6 +1,6 @@
 ---
 name: codex-auth
-description: 🧩 Codex Skill — Refresh your Codex CLI auth.json from a local ChatGPT web session. Essential for Codex users behind firewalls, in WSL/containers, or on remote desktops.
+description: 🧩 Codex Skill — Refresh Codex CLI auth.json from ChatGPT. Skipphone verification, no overseas number needed. For users behind firewalls, in WSL, or remote desktop.
 tags:
   - codex
   - codex-cli
@@ -9,6 +9,7 @@ tags:
   - token
   - windows
   - playwright
+  - phone-verification
 ---
 
 # 🧩 Codex Skill: Codex Auth Session Refresh
@@ -16,38 +17,27 @@ tags:
 > **This is an [OpenClaw skill](https://clawhub.com/skill/codex-auth-session) for [Codex CLI](https://github.com/openai/codex).**
 > It provides Windows tooling to refresh Codex's `auth.json` with a fresh ChatGPT session token.
 
-**適用於 Codex · For Codex CLI users**
+📱 **跳过手机验证码 · 不需要外区手机号 · 適用於 Codex**
 
 ---
 
 ## 🎯 Who Is This For?
 
-**Codex CLI users** who are stuck with any of these:
+**Codex CLI users** stuck with these pain points:
 
 | 😤 Pain | 💥 Why it sucks |
 |---------|----------------|
 | Codex OAuth won't complete | Proxies, WSL, containers — browser never opens |
-| OpenAI 2FA every time | Token expires every few hours |
+| 📱 OpenAI phone verification | SMS code required, no overseas phone number = can't login |
+| Re-auth every few hours | Keep entering SMS codes, drives you crazy |
 | Forced to use API proxies | Can't get official auth working, settle for third-party |
 | Token dies mid-session | Lose context, workflow destroyed |
 
 ## What This Does
 
-Extracts a fresh `access_token` from your existing ChatGPT browser session and writes it directly to Codex's `~/.codex/auth.json`. No reverse engineering. No MITM. No API abuse.
+Extracts a fresh `access_token` from your existing ChatGPT browser session and writes it directly to Codex's `~/.codex/auth.json`.
 
-**适用于 Codex CLI！Codex 走不了 OAuth 时的救星。**
-
-## Quick Install (on Windows)
-
-```powershell
-git clone https://github.com/zcz-user/codex-auth-session-refresh.git
-cd codex-auth-session-refresh
-npm install
-.\login-profile.ps1        # Login ChatGPT → press Enter
-.\status.ps1               # Check Codex auth state
-```
-
-Then Codex will see the fresh token in `~/.codex/auth.json`.
+**核心价值：** 只要你的 ChatGPT 浏览器还在登录状态，就不需要再收验证码。一次登录，Codex 永久续命。
 
 ## Installation via ClawHub
 
@@ -55,38 +45,42 @@ Then Codex will see the fresh token in `~/.codex/auth.json`.
 clawhub install codex-auth-session
 ```
 
-## Commands (for Codex auth management)
+## Quick Install (Windows)
+
+```powershell
+git clone https://github.com/zcz-user/codex-auth-session-refresh.git
+cd codex-auth-session-refresh
+npm install
+.\login-profile.ps1        # Login ChatGPT → press Enter
+.\status.ps1               # Check Codex auth state
+.\install-scheduled-task.ps1  # Auto-refresh, never re-auth again
+```
+
+## Commands
 
 | Command | What it does |
 |---------|-------------|
-| `login-profile.ps1` | First login / re-login into ChatGPT (for Codex) |
+| `login-profile.ps1` | First login / re-login into ChatGPT |
 | `run-refresh.ps1` | Refresh Codex's access token now |
 | `status.ps1` | Check Codex auth.json status |
-| `install-scheduled-task.ps1` | Auto-refresh Codex auth every N hours |
-| `create-desktop-toolbox.ps1` | Desktop shortcuts for Codex auth management |
+| `install-scheduled-task.ps1` | Auto-refresh every N hours |
+| `create-desktop-toolbox.ps1` | Desktop shortcuts |
 
-## How It Works
+## Environment Variables
 
-```
-You (browser login to ChatGPT)
-        │
-        ▼
-Playwright → chatgpt.com/api/auth/session → accessToken
-                                                  │
-                                                  ▼
-                                        ~/.codex/auth.json
-                                        (backup created before update)
-                                                  │
-                                                  ▼
-                                  Windows Scheduled Task
-                                  (auto-refresh, so Codex never loses auth)
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CODEX_AUTH_PATH` | `~/.codex/auth.json` | Codex auth file target |
+| `CODEX_AUTH_REFRESH_BROWSER` | auto-detect | Chrome/Edge path override |
+| `CODEX_AUTH_REFRESH_PROFILE` | `./browser-profile` | Browser profile storage |
+| `CODEX_AUTH_REFRESH_BACKUP` | `./backups` | Auth file backup dir |
+| `CODEX_AUTH_REFRESH_LOG` | `./logs` | Operation log dir |
 
 ## Security
 
-- Token values are **never** logged — `delete safe.token` before write
+- Token values are **never** written to logs (`delete safe.token` before write)
 - `auth.json` backed up with timestamp before every update
-- All sensitive paths excluded via `.gitignore`
+- `browser-profile/`, `logs/`, `backups/`, `auth.json` all excluded via `.gitignore`
 
 ## Requirements
 
